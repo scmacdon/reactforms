@@ -8,7 +8,7 @@ const InfiniteScrollList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [editFormData, setEditFormData] = useState({
     text: "",
     id: "",
@@ -46,34 +46,35 @@ const InfiniteScrollList = () => {
     }, 1000);
   };
 
-  const handleAddNewItem = () => {
-    setItems((prevItems) => [
-      ...prevItems,
-      {
-        text: `Text Element ${prevItems.length + 1}`,
-        id: "",
-        type: "Text",
-        required: false,
-      },
-    ]);
-    setIsModalOpen(false);
-  };
-
-  const handleDeleteItem = () => {
-    if (selectedIndex !== null) {
-      setItems((prevItems) => prevItems.filter((_, index) => index !== selectedIndex));
-      setIsModalOpen(false);
-    }
-  };
-
-  const handleOpenModal = (index) => {
-    setSelectedIndex(index);
+  const handleOpenModal = (item = null, title = "Delete Item") => {
+    setSelectedItem(item);
+    setModalTitle(title);
     setIsModalOpen(true);
   };
 
-  const handleOpenEditModal = (index) => {
-    setSelectedIndex(index);
-    const { text, id, type, required } = items[index];
+  const handleCreateNewItem = () => {
+    setEditFormData({ text: "", id: "", type: "Text", required: false });
+    setModalTitle("Add New Item");
+    setIsModalOpen(true);
+  };
+
+  const handleAddNewItem = () => {
+    if (editFormData.text.trim()) {
+      setItems((prevItems) => [...prevItems, { ...editFormData, id: Date.now().toString() }]);
+      setIsModalOpen(false); // Close modal after adding new item
+    }
+  };
+
+  const handleDeleteItem = () => {
+    if (selectedItem !== null) {
+      setItems((prevItems) => prevItems.filter((item) => item !== selectedItem));
+      setIsModalOpen(false); // Close modal after deletion
+    }
+  };
+
+  const handleOpenEditModal = (item) => {
+    setSelectedItem(item);
+    const { text, id, type, required } = item;
     setEditFormData({ text, id, type, required });
     setModalTitle(`Edit ${type} Item`); // Set the modal title dynamically
     setIsEditModalOpen(true);
@@ -81,42 +82,43 @@ const InfiniteScrollList = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedIndex(null);
+    setSelectedItem(null);
   };
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
-    setSelectedIndex(null);
+    setSelectedItem(null);
   };
 
   const handleSaveEdit = () => {
-    if (selectedIndex !== null) {
-      const updatedItems = [...items];
-      updatedItems[selectedIndex] = { ...editFormData };
+    if (selectedItem !== null) {
+      const updatedItems = items.map(item =>
+        item === selectedItem ? { ...editFormData } : item
+      );
       setItems(updatedItems);
       setIsEditModalOpen(false);
     }
   };
 
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
+  const handleMouseEnter = (item) => {
+    setHoveredIndex(items.indexOf(item));
   };
 
   const handleMouseLeave = () => {
     setHoveredIndex(-1);
   };
 
-  const handleDragStart = (index) => {
-    setDraggedIndex(index);
+  const handleDragStart = (item) => {
+    setDraggedIndex(items.indexOf(item));
   };
 
-  const handleDragOver = (index) => {
-    if (index !== draggedIndex) {
+  const handleDragOver = (item) => {
+    if (items.indexOf(item) !== draggedIndex) {
       const updatedItems = [...items];
       const [draggedItem] = updatedItems.splice(draggedIndex, 1);
-      updatedItems.splice(index, 0, draggedItem);
+      updatedItems.splice(items.indexOf(item), 0, draggedItem);
       setItems(updatedItems);
-      setDraggedIndex(index);
+      setDraggedIndex(items.indexOf(item));
     }
   };
 
@@ -148,20 +150,23 @@ const InfiniteScrollList = () => {
         {showAttributes ? "Hide Attributes" : "Show All Attributes"}
       </button>
       <button onClick={handleConvertToJSON}>Convert to JSON</button>
+      <button onClick={handleCreateNewItem} className="btn btn-add">
+        ➕ Add New Item
+      </button>
 
       <ul className="item-list">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <li
-            key={index}
+            key={item.id}
             draggable
-            onDragStart={() => handleDragStart(index)}
+            onDragStart={() => handleDragStart(item)}
             onDragOver={(e) => {
               e.preventDefault();
-              handleDragOver(index);
+              handleDragOver(item);
             }}
             onDragEnd={handleDragEnd}
-            className={`list-item ${hoveredIndex === index ? "hovered" : ""}`}
-            onMouseEnter={() => handleMouseEnter(index)}
+            className={`list-item ${hoveredIndex === items.indexOf(item) ? "hovered" : ""}`}
+            onMouseEnter={() => handleMouseEnter(item)}
             onMouseLeave={handleMouseLeave}
           >
             <input
@@ -179,11 +184,10 @@ const InfiniteScrollList = () => {
                 <p>Required: {item.required ? "Yes" : "No"}</p>
               </div>
             )}
-            {hoveredIndex === index && (
+            {hoveredIndex === items.indexOf(item) && (
               <div className="action-buttons">
-                <span onClick={() => handleOpenEditModal(index)}>✏️</span>
-                <span onClick={() => handleOpenModal(index)}>➕</span>
-                <span onClick={() => handleDeleteItem()}>🗑️</span>
+                <span onClick={() => handleOpenEditModal(item)}>✏️</span>
+                <span onClick={() => handleOpenModal(item)}>🗑️</span> {/* Show Delete modal */}
               </div>
             )}
           </li>
@@ -194,26 +198,66 @@ const InfiniteScrollList = () => {
 
       {isModalOpen && (
         <div className="modal">
-          <h3>Manage Item</h3>
-          <label>
-            Element Type:
-            <select
-              onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
-              value={editFormData.type}
-              className="dropdown-select"
-            >
-              <option value="Text">Text Input</option>
-              <option value="Textarea">Text Area</option>
-              <option value="Number">Number Input</option>
-              {/* Add more options as needed */}
-            </select>
-          </label>
-          <button onClick={handleAddNewItem} className="btn btn-add">
-            ➕ Add New Item
-          </button>
-          <button onClick={handleCloseModal} className="btn btn-cancel">
-            Cancel
-          </button>
+          <h3>{modalTitle}</h3>
+          {modalTitle === "Delete Item" ? (
+            <div>
+              <p>Are you sure you want to delete this item?</p>
+              <button onClick={handleDeleteItem} className="btn btn-delete">
+                Delete
+              </button>
+              <button onClick={handleCloseModal} className="btn btn-cancel">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <>
+              <label>
+                Element Type:
+                <select
+                  onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
+                  value={editFormData.type}
+                  className="dropdown-select"
+                >
+                  <option value="Text">Text Input</option>
+                  <option value="Textarea">Text Area</option>
+                  <option value="Number">Number Input</option>
+                  {/* Add more options as needed */}
+                </select>
+              </label>
+              <label>
+                Text:
+                <input
+                  type="text"
+                  value={editFormData.text}
+                  onChange={(e) => setEditFormData({ ...editFormData, text: e.target.value })}
+                  className="edit-input"
+                />
+              </label>
+              <label>
+                Id:
+                <input
+                  type="text"
+                  value={editFormData.id}
+                  onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
+                  className="edit-input"
+                />
+              </label>
+              <label>
+                Required:
+                <input
+                  type="checkbox"
+                  checked={editFormData.required}
+                  onChange={(e) => setEditFormData({ ...editFormData, required: e.target.checked })}
+                />
+              </label>
+              <button onClick={handleAddNewItem} className="btn btn-add">
+                Add
+              </button>
+              <button onClick={handleCloseModal} className="btn btn-cancel">
+                Cancel
+              </button>
+            </>
+          )}
         </div>
       )}
 
@@ -225,9 +269,7 @@ const InfiniteScrollList = () => {
             <input
               type="text"
               value={editFormData.text}
-              onChange={(e) =>
-                setEditFormData({ ...editFormData, text: e.target.value })
-              }
+              onChange={(e) => setEditFormData({ ...editFormData, text: e.target.value })}
               className="edit-input"
             />
           </label>
@@ -236,9 +278,7 @@ const InfiniteScrollList = () => {
             <input
               type="text"
               value={editFormData.id}
-              onChange={(e) =>
-                setEditFormData({ ...editFormData, id: e.target.value })
-              }
+              onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
               className="edit-input"
             />
           </label>
@@ -247,12 +287,7 @@ const InfiniteScrollList = () => {
             <input
               type="checkbox"
               checked={editFormData.required}
-              onChange={(e) =>
-                setEditFormData({
-                  ...editFormData,
-                  required: e.target.checked,
-                })
-              }
+              onChange={(e) => setEditFormData({ ...editFormData, required: e.target.checked })}
             />
           </label>
           <button onClick={handleSaveEdit} className="btn btn-save">
@@ -268,9 +303,3 @@ const InfiniteScrollList = () => {
 };
 
 export default InfiniteScrollList;
-
-
-
-
-
-
