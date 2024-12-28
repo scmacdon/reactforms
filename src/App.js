@@ -3,7 +3,7 @@ import "./InfiniteScrollList.css"; // Import the CSS file
 
 const InfiniteScrollList = () => {
   const [items, setItems] = useState([
-    { text: "Form", id: "form", required: false },
+    { text: "Form", id: "form", type: "Form", required: false },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,8 +12,10 @@ const InfiniteScrollList = () => {
   const [editFormData, setEditFormData] = useState({
     text: "",
     id: "",
+    type: "",
     required: false,
   });
+  const [modalTitle, setModalTitle] = useState(""); // New state for modal title
   const loaderRef = useRef(null);
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const [draggedIndex, setDraggedIndex] = useState(null);
@@ -36,6 +38,7 @@ const InfiniteScrollList = () => {
         {
           text: `Text Element ${prevItems.length + 1}`,
           id: "",
+          type: "Text",
           required: false,
         },
       ]);
@@ -49,6 +52,7 @@ const InfiniteScrollList = () => {
       {
         text: `Text Element ${prevItems.length + 1}`,
         id: "",
+        type: "Text",
         required: false,
       },
     ]);
@@ -69,8 +73,9 @@ const InfiniteScrollList = () => {
 
   const handleOpenEditModal = (index) => {
     setSelectedIndex(index);
-    const { text, id, required } = items[index];
-    setEditFormData({ text, id, required });
+    const { text, id, type, required } = items[index];
+    setEditFormData({ text, id, type, required });
+    setModalTitle(`Edit ${type} Item`); // Set the modal title dynamically
     setIsEditModalOpen(true);
   };
 
@@ -124,6 +129,10 @@ const InfiniteScrollList = () => {
     alert(json); // Show JSON in a popup
   };
 
+  const toggleShowAttributes = () => {
+    setShowAttributes((prev) => !prev);
+  };
+
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, { threshold: 1.0 });
     if (loaderRef.current) observer.observe(loaderRef.current);
@@ -135,7 +144,7 @@ const InfiniteScrollList = () => {
 
   return (
     <div className="infinite-scroll-container">
-      <button onClick={() => setShowAttributes(!showAttributes)}>
+      <button onClick={toggleShowAttributes}>
         {showAttributes ? "Hide Attributes" : "Show All Attributes"}
       </button>
       <button onClick={handleConvertToJSON}>Convert to JSON</button>
@@ -165,6 +174,7 @@ const InfiniteScrollList = () => {
             />
             {showAttributes && (
               <div className="item-attributes">
+                <p>Type: {item.type}</p>
                 <p>ID: {item.id}</p>
                 <p>Required: {item.required ? "Yes" : "No"}</p>
               </div>
@@ -184,15 +194,21 @@ const InfiniteScrollList = () => {
       {isModalOpen && (
         <div className="modal">
           <h3>Manage Item</h3>
-          <button onClick={handleAddNewItem} className="btn btn-add">Add New Item</button>
-          <button onClick={handleDeleteItem} className="btn btn-delete">Delete</button>
-          <button onClick={handleCloseModal} className="btn btn-cancel">Cancel</button>
+          <button onClick={handleAddNewItem} className="btn btn-add">
+            Add New Item
+          </button>
+          <button onClick={handleDeleteItem} className="btn btn-delete">
+            Delete
+          </button>
+          <button onClick={handleCloseModal} className="btn btn-cancel">
+            Cancel
+          </button>
         </div>
       )}
 
       {isEditModalOpen && (
         <div className="modal">
-          <h3>Edit Item</h3>
+          <h3>{modalTitle}</h3> {/* Use modalTitle state */}
           <label>
             Text:
             <input
@@ -228,8 +244,12 @@ const InfiniteScrollList = () => {
               }
             />
           </label>
-          <button onClick={handleSaveEdit} className="btn btn-save">Save</button>
-          <button onClick={handleCloseEditModal} className="btn btn-cancel">Cancel</button>
+          <button onClick={handleSaveEdit} className="btn btn-save">
+            Save
+          </button>
+          <button onClick={handleCloseEditModal} className="btn btn-cancel">
+            Cancel
+          </button>
         </div>
       )}
     </div>
@@ -237,3 +257,6 @@ const InfiniteScrollList = () => {
 };
 
 export default InfiniteScrollList;
+
+
+
