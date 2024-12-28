@@ -60,11 +60,10 @@ const InfiniteScrollList = () => {
 
   const handleAddNewItem = () => {
     if (editFormData.text.trim()) {
-      setItems((prevItems) =>
-        prevItems.map(item =>
-          item.id === editFormData.id ? { ...editFormData } : item
-        )
-      );
+      setItems((prevItems) => [
+        ...prevItems,
+        { ...editFormData, id: new Date().toISOString() } // Ensure unique id
+      ]);
       setIsModalOpen(false); // Close modal after adding new item
     }
   };
@@ -307,5 +306,4 @@ const InfiniteScrollList = () => {
 };
 
 export default InfiniteScrollList;
-
 
