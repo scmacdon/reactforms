@@ -11,10 +11,10 @@ The AWS Form Builder is a React-based application designed to facilitate the cre
 - Renders the TaskList component and other necessary UI elements.
 
 ### TaskList Component:
-- Handles the rendering, organization, and manipulation of form tasks.
+- Handles the rendering, organization, and manipulation of form elements.
 - Utilizes drag-and-drop functionality for task reordering and status updates.
 - Provides modals for editing task details and confirming task deletion.
-- Supports the creation and deletion of tasks.
+- Supports the creation and deletion of various form elements.
 
 ## 3. Drag-and-Drop Functionality:
 
@@ -30,8 +30,8 @@ The AWS Form Builder is a React-based application designed to facilitate the cre
 - Tasks are organized into columns based on their status.
 
 ### Task Actions:
-- Double-clicking on a task opens a modal for editing task details.
-- Users can add new tasks with a "+" button.
+- In the designer view, a form element has an edit icon. A user can click this given icon to update the form element. 
+- Users can add new elements with a "+" button.
 - Tasks can be deleted, with a confirmation modal to prevent accidental deletions.
 
 ## 5. Modals:
@@ -52,13 +52,13 @@ The AWS Form Builder is a React-based application designed to facilitate the cre
 ## 7. Data Persistence:
 
 - The application currently relies on local state for task management.
-- Future enhancements may involve integrating data persistence mechanisms like AWS RDS or S3 for storing form configurations.
+- This application will be an AWS Serverless application that makes user of API Gateway, AWS Lambda functions that involve integrating data persistence mechanisms like Amazon DynamoDB, S3 for storing form configurations, and so on.
 
 ## 8. Dynamic Schema Creation and Backend Integration:
 
 - The React app will read form attributes dynamically.
 - It will create a schema based on the form attributes.
-- The created schema will be posted to a backend service (e.g., AWS RDS) for persistence.
+- The created schema will be posted to a backend service (e.g., AWS API Gateway).
 
 ## 9. Future Enhancements:
 

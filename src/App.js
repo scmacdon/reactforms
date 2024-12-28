@@ -60,13 +60,17 @@ const InfiniteScrollList = () => {
 
   const handleAddNewItem = () => {
     if (editFormData.text.trim()) {
-      setItems((prevItems) => [...prevItems, { ...editFormData, id: Date.now().toString() }]);
+      setItems((prevItems) =>
+        prevItems.map(item =>
+          item.id === editFormData.id ? { ...editFormData } : item
+        )
+      );
       setIsModalOpen(false); // Close modal after adding new item
     }
   };
 
   const handleDeleteItem = () => {
-    if (selectedItem !== null) {
+    if (selectedItem !== null && selectedItem.type !== "Form") {
       setItems((prevItems) => prevItems.filter((item) => item !== selectedItem));
       setIsModalOpen(false); // Close modal after deletion
     }
@@ -187,7 +191,7 @@ const InfiniteScrollList = () => {
             {hoveredIndex === items.indexOf(item) && (
               <div className="action-buttons">
                 <span onClick={() => handleOpenEditModal(item)}>✏️</span>
-                <span onClick={() => handleOpenModal(item)}>🗑️</span> {/* Show Delete modal */}
+                {item.type !== "Form" && <span onClick={() => handleOpenModal(item)}>🗑️</span>} {/* Show delete only if not a Form */}
               </div>
             )}
           </li>
@@ -303,3 +307,5 @@ const InfiniteScrollList = () => {
 };
 
 export default InfiniteScrollList;
+
+
