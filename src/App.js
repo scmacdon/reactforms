@@ -182,7 +182,8 @@ const InfiniteScrollList = () => {
             {hoveredIndex === index && (
               <div className="action-buttons">
                 <span onClick={() => handleOpenEditModal(index)}>✏️</span>
-                <span onClick={() => handleOpenModal(index)}>⚙️</span>
+                <span onClick={() => handleOpenModal(index)}>➕</span>
+                <span onClick={() => handleDeleteItem()}>🗑️</span>
               </div>
             )}
           </li>
@@ -194,11 +195,21 @@ const InfiniteScrollList = () => {
       {isModalOpen && (
         <div className="modal">
           <h3>Manage Item</h3>
+          <label>
+            Element Type:
+            <select
+              onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
+              value={editFormData.type}
+              className="dropdown-select"
+            >
+              <option value="Text">Text Input</option>
+              <option value="Textarea">Text Area</option>
+              <option value="Number">Number Input</option>
+              {/* Add more options as needed */}
+            </select>
+          </label>
           <button onClick={handleAddNewItem} className="btn btn-add">
-            Add New Item
-          </button>
-          <button onClick={handleDeleteItem} className="btn btn-delete">
-            Delete
+            ➕ Add New Item
           </button>
           <button onClick={handleCloseModal} className="btn btn-cancel">
             Cancel
@@ -257,6 +268,9 @@ const InfiniteScrollList = () => {
 };
 
 export default InfiniteScrollList;
+
+
+
 
 
 
