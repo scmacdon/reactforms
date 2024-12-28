@@ -1,0 +1,138 @@
+:root {
+    --bg-color: #121212;      /* Dark background color */
+    --text-color: #e0e0e0;    /* Light text color for contrast */
+    --item-bg-color: #1e1e1e;  /* Dark background color for items */
+    --hover-bg-color: #2e2e2e; /* Darker hover background for items */
+    --btn-bg-color: #333;     /* Dark button background */
+    --btn-text-color: #fff;   /* White button text color */
+  }
+  
+  .infinite-scroll-container {
+    height: 400px;
+    overflow: auto;
+    padding: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .item-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .list-item {
+    margin: 10px 0;
+    padding: 15px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: var(--item-bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;  /* Ensure positioning is correct */
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .list-item.hovered {
+    background-color: var(--hover-bg-color);
+  }
+  
+  .item-input {
+    width: calc(100% - 40px);  /* Subtract icon width */
+    padding: 8px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+  }
+  
+  .item-input-icons {
+    display: flex;
+    gap: 10px;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .item-input-icons span {
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 16px;
+  }
+  
+  .action-buttons {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 10px;
+  }
+  
+  .loading-text {
+    color: #888;
+  }
+  
+  .loader-placeholder {
+    height: 20px;
+    background: transparent;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: var(--item-bg-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .edit-input {
+    width: calc(100% - 12px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  .btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .btn-add {
+    background-color: var(--btn-bg-color);
+    color: var(--btn-text-color);
+  }
+  
+  .btn-save {
+    background-color: #28a745;
+    color: var(--btn-text-color);
+  }
+  
+  .btn-delete {
+    background-color: #dc3545;
+    color: var(--btn-text-color);
+  }
+  
+  .btn-cancel {
+    background-color: #6c757d;
+    color: var(--btn-text-color);
+  }
+  
+  
+  
+  

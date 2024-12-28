@@ -1,0 +1,44 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #1a1a1a; /* Dark background for the entire page */
+    font-family: Arial, sans-serif;
+  }
+  
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+    overflow-y: auto; /* Scrollable content */
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in width/height calculations */
+    background-color: #2b2b2b; /* Darker container background */
+    color: #fff; /* White text for contrast */
+  }
+  
+  .list-item {
+    width: 90%; /* Ensure items are not too wide */
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background-color: #333; /* Slightly lighter gray */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .list-item:hover {
+    background-color: #444; /* Highlight color on hover */
+    color: #e1e1e1; /* Lighter text on hover */
+  }
+  
+  .highlighted {
+    background-color: #444; /* Consistent highlight color */
+    color: #e1e1e1; /* Consistent highlighted text color */
+  }
+  
+  
