@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid"; // Import uuid library
 import "./InfiniteScrollList.css"; // Import the CSS file
 
 const InfiniteScrollList = () => {
   const [items, setItems] = useState([
-    { text: "Form", id: "form", type: "Form", required: false },
+    { text: "Form", id: uuidv4(), type: "Form", required: false },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +16,7 @@ const InfiniteScrollList = () => {
     type: "Text",
     required: false,
   });
-  const [modalTitle, setModalTitle] = useState(""); // New state for modal title
+  const [modalTitle, setModalTitle] = useState("");
   const loaderRef = useRef(null);
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const [draggedIndex, setDraggedIndex] = useState(null);
@@ -29,7 +30,7 @@ const InfiniteScrollList = () => {
   };
 
   const loadMoreItems = () => {
-    if (isLoading) return; // Prevent duplicate loading
+    if (isLoading) return;
     setIsLoading(true);
 
     setTimeout(() => {
@@ -37,7 +38,7 @@ const InfiniteScrollList = () => {
         ...prevItems,
         {
           text: `Text Element ${prevItems.length + 1}`,
-          id: "",
+          id: uuidv4(),
           type: "Text",
           required: false,
         },
@@ -53,33 +54,39 @@ const InfiniteScrollList = () => {
   };
 
   const handleCreateNewItem = () => {
-    setEditFormData({ text: "", id: "", type: "Text", required: false });
+    setEditFormData({ text: "", id: uuidv4(), type: "Text", required: false });
     setModalTitle("Add New Item");
     setIsModalOpen(true);
   };
 
   const handleAddNewItem = () => {
     if (editFormData.text.trim()) {
-      setItems((prevItems) => [
-        ...prevItems,
-        { ...editFormData, id: new Date().toISOString() } // Ensure unique id and use the selected type
-      ]);
-      setIsModalOpen(false); // Close modal after adding new item
+      // If element type is not Form, include the required field
+      const itemData = editFormData.type === "Form"
+        ? { text: editFormData.text, id: uuidv4(), type: "Form", required: false }
+        : { ...editFormData };
+      setItems((prevItems) => [...prevItems, itemData]);
+      setIsModalOpen(false);
     }
   };
 
   const handleDeleteItem = () => {
     if (selectedItem !== null && selectedItem.type !== "Form") {
       setItems((prevItems) => prevItems.filter((item) => item !== selectedItem));
-      setIsModalOpen(false); // Close modal after deletion
+      setIsModalOpen(false);
     }
   };
 
   const handleOpenEditModal = (item) => {
     setSelectedItem(item);
     const { text, id, type, required } = item;
-    setEditFormData({ text, id, type, required });
-    setModalTitle(`Edit ${type} Item`); // Set the modal title dynamically
+    setEditFormData({
+      text,
+      id,
+      type,
+      required: type === "Form" ? false : required, // Exclude required field for Form type
+    });
+    setModalTitle(`Edit ${type} Item`);
     setIsEditModalOpen(true);
   };
 
@@ -95,8 +102,14 @@ const InfiniteScrollList = () => {
 
   const handleSaveEdit = () => {
     if (selectedItem !== null) {
-      const updatedItems = items.map(item =>
-        item === selectedItem ? { ...editFormData } : item
+      // If element type is not Form, include the required field
+      const updatedItems = items.map((item) =>
+        item === selectedItem
+          ? {
+              ...editFormData,
+              required: editFormData.type === "Form" ? false : editFormData.required,
+            }
+          : item
       );
       setItems(updatedItems);
       setIsEditModalOpen(false);
@@ -131,7 +144,7 @@ const InfiniteScrollList = () => {
 
   const handleConvertToJSON = () => {
     const json = JSON.stringify(items, null, 2);
-    alert(json); // Show JSON in a popup
+    alert(json);
   };
 
   const toggleShowAttributes = () => {
@@ -168,7 +181,9 @@ const InfiniteScrollList = () => {
               handleDragOver(item);
             }}
             onDragEnd={handleDragEnd}
-            className={`list-item ${hoveredIndex === items.indexOf(item) ? "hovered" : ""}`}
+            className={`list-item ${
+              hoveredIndex === items.indexOf(item) ? "hovered" : ""
+            }`}
             onMouseEnter={() => handleMouseEnter(item)}
             onMouseLeave={handleMouseLeave}
           >
@@ -176,8 +191,14 @@ const InfiniteScrollList = () => {
               type="text"
               value={item.text}
               id={item.id}
-              required={item.required}
-              readOnly
+              onChange={(e) => {
+                const updatedItems = items.map((itm) =>
+                  itm.id === item.id
+                    ? { ...itm, text: e.target.value }
+                    : itm
+                );
+                setItems(updatedItems);
+              }}
               className="item-input"
             />
             {showAttributes && (
@@ -190,7 +211,9 @@ const InfiniteScrollList = () => {
             {hoveredIndex === items.indexOf(item) && (
               <div className="action-buttons">
                 <span onClick={() => handleOpenEditModal(item)}>✏️</span>
-                {item.type !== "Form" && <span onClick={() => handleOpenModal(item)}>🗑️</span>} {/* Show delete only if not a Form */}
+                {item.type !== "Form" && (
+                  <span onClick={() => handleOpenModal(item)}>🗑️</span>
+                )}
               </div>
             )}
           </li>
@@ -217,14 +240,15 @@ const InfiniteScrollList = () => {
               <label>
                 Element Type:
                 <select
-                  onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, type: e.target.value })
+                  }
                   value={editFormData.type}
                   className="dropdown-select"
                 >
                   <option value="Text">Text Input</option>
                   <option value="Textarea">Text Area</option>
                   <option value="Number">Number Input</option>
-                  {/* Add more options as needed */}
                 </select>
               </label>
               <label>
@@ -232,7 +256,9 @@ const InfiniteScrollList = () => {
                 <input
                   type="text"
                   value={editFormData.text}
-                  onChange={(e) => setEditFormData({ ...editFormData, text: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, text: e.target.value })
+                  }
                   className="edit-input"
                 />
               </label>
@@ -241,18 +267,27 @@ const InfiniteScrollList = () => {
                 <input
                   type="text"
                   value={editFormData.id}
-                  onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, id: e.target.value })
+                  }
                   className="edit-input"
                 />
               </label>
-              <label>
-                Required:
-                <input
-                  type="checkbox"
-                  checked={editFormData.required}
-                  onChange={(e) => setEditFormData({ ...editFormData, required: e.target.checked })}
-                />
-              </label>
+              {editFormData.type !== "Form" && (
+                <label>
+                  Required:
+                  <input
+                    type="checkbox"
+                    checked={editFormData.required}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        required: e.target.checked,
+                      })
+                    }
+                  />
+                </label>
+              )}
               <button onClick={handleAddNewItem} className="btn btn-add">
                 Add
               </button>
@@ -266,13 +301,15 @@ const InfiniteScrollList = () => {
 
       {isEditModalOpen && (
         <div className="modal">
-          <h3>{modalTitle}</h3> {/* Use modalTitle state */}
+          <h3>{modalTitle}</h3>
           <label>
             Text:
             <input
               type="text"
               value={editFormData.text}
-              onChange={(e) => setEditFormData({ ...editFormData, text: e.target.value })}
+              onChange={(e) =>
+                setEditFormData({ ...editFormData, text: e.target.value })
+              }
               className="edit-input"
             />
           </label>
@@ -281,18 +318,27 @@ const InfiniteScrollList = () => {
             <input
               type="text"
               value={editFormData.id}
-              onChange={(e) => setEditFormData({ ...editFormData, id: e.target.value })}
+              onChange={(e) =>
+                setEditFormData({ ...editFormData, id: e.target.value })
+              }
               className="edit-input"
             />
           </label>
-          <label>
-            Required:
-            <input
-              type="checkbox"
-              checked={editFormData.required}
-              onChange={(e) => setEditFormData({ ...editFormData, required: e.target.checked })}
-            />
-          </label>
+          {editFormData.type !== "Form" && (
+            <label>
+              Required:
+              <input
+                type="checkbox"
+                checked={editFormData.required}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    required: e.target.checked,
+                  })
+                }
+              />
+            </label>
+          )}
           <button onClick={handleSaveEdit} className="btn btn-save">
             Save
           </button>
@@ -306,4 +352,3 @@ const InfiniteScrollList = () => {
 };
 
 export default InfiniteScrollList;
-
