@@ -12,7 +12,7 @@ const InfiniteScrollList = () => {
   const [editFormData, setEditFormData] = useState({
     text: "",
     id: "",
-    type: "",
+    type: "Text",
     required: false,
   });
   const [modalTitle, setModalTitle] = useState(""); // New state for modal title
@@ -62,7 +62,7 @@ const InfiniteScrollList = () => {
     if (editFormData.text.trim()) {
       setItems((prevItems) => [
         ...prevItems,
-        { ...editFormData, id: new Date().toISOString() } // Ensure unique id
+        { ...editFormData, id: new Date().toISOString() } // Ensure unique id and use the selected type
       ]);
       setIsModalOpen(false); // Close modal after adding new item
     }
