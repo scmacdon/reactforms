@@ -1,0 +1,28 @@
+.two-column-layout {
+  display: flex; /* Enable two-column layout */
+  gap: 20px; /* Space between columns */
+  background-color: #121212; /* Set a dark background theme for the container */
+  padding: 20px; /* Add padding around the layout */
+  color: #e0e0e0; /* Set text color for readability */
+}
+
+.left-column,
+.right-column {
+  flex: 1; /* Ensure both columns take equal space */
+  padding: 20px;
+  border: 1px solid #333; /* Darken the border for the dark theme */
+  border-radius: 8px;
+  background-color: #1e1e1e; /* Use a slightly lighter dark color for columns */
+}
+
+.current-component {
+  background-color: #292929; /* Dark background for the current component */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Enhance shadow for dark theme */
+  color: #ffffff; /* Ensure text stands out on dark background */
+}
+
+.right-column {
+  text-align: center;
+}

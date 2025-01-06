@@ -19,10 +19,10 @@ body {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reduced padding for smaller buttons */
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 14px; /* Reduced font size */
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   margin: 5px;
@@ -130,10 +130,10 @@ button:disabled {
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reduced padding for smaller buttons */
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 14px; /* Reduced font size */
   cursor: pointer;
   margin: 5px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -168,6 +168,7 @@ button:disabled {
   background-color: #c82333;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 
 
 
